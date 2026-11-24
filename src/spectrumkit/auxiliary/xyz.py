@@ -290,11 +290,7 @@ class _ExtXYZFile:
 
         self.data_dict: dict[str, np.ndarray] = {}
         self._read_atom_columns(lines, starts, properties)
-        self.per_atom_terms = list(self.data_dict)
         self._read_frame_keys(infos)
-        self.per_frame_terms = [
-            term for term in self.data_dict if term not in self.per_atom_terms
-        ]
         # read-only, because all readers of the file share these arrays
         for array in self.data_dict.values():
             array.flags.writeable = False
@@ -432,15 +428,12 @@ class XYZReader(base.AuxReader):
     Attributes
     ----------
     data_dict : dict
-        Maps each term to a NumPy array with the frames along the first axis.
+        Maps each term to a NumPy array with the frames along the first axis: per-atom
+        terms have shape ``(n_steps, n_atoms[, ncols])``, per-frame terms
+        ``(n_steps, ...)``.
     terms : list of str
-        Names of all terms in :attr:`data_dict`: :attr:`per_atom_terms` followed by
-        :attr:`per_frame_terms`.
-    per_atom_terms : list of str
-        Terms read from the atom columns, arrays of shape
-        ``(n_steps, n_atoms[, ncols])``.
-    per_frame_terms : list of str
-        Terms read from the comment lines, arrays of shape ``(n_steps, ...)``.
+        Names of all terms in :attr:`data_dict`: the per-atom terms in column order,
+        followed by the per-frame terms in the order of the comment line.
 
     Raises
     ------
@@ -476,8 +469,6 @@ class XYZReader(base.AuxReader):
         self._parsed = parsed  # keeps the weakly cached parse alive
 
         self.data_dict = dict(parsed.data_dict)
-        self.per_atom_terms = list(parsed.per_atom_terms)
-        self.per_frame_terms = list(parsed.per_frame_terms)
         self.terms = list(self.data_dict)
         self._n_steps = parsed.n_steps
         super().__init__(**kwargs)
