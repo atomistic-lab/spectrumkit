@@ -15,3 +15,6 @@ EXAMPLES = DIR_PATH / ".." / ".." / "examples"
 # bulk water (NpT)
 WATER_TRR_NPT = EXAMPLES / "water.trr"
 WATER_TPR_NPT = EXAMPLES / "water.tpr"
+
+# extended XYZ with per-atom and per-frame properties (5 atoms, 5 frames)
+AUX_EXTXYZ = DIR_PATH / "aux.extxyz"
