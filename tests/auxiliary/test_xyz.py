@@ -166,7 +166,7 @@ class TestXYZReader(BaseAuxReaderTest):
 
     def test_changed_file_is_read_again(self, ref, tmp_path):
         """Test that the shared parse is renewed for a changed file."""
-        path = tmp_path / "aux.extxyz"
+        path = tmp_path / "properties.extxyz"
         content = AUX_EXTXYZ.read_text()
         path.write_text(content)
         first = ref.reader(path)
