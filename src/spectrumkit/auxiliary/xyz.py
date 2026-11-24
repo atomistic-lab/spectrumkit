@@ -546,28 +546,6 @@ class XYZReader(base.AuxReader):
             return self.data_dict[self.time_selector]
         return np.arange(self.n_steps) * self.dt + self.initial_time
 
-    def update_ts(self, ts):
-        """Read auxiliary steps corresponding to and update the timestep *ts*.
-
-        See :meth:`MDAnalysis.auxiliary.base.AuxReader.update_ts`.
-
-        Raises
-        ------
-        ValueError
-            If a selected per-atom term has a different number of atoms than *ts*.
-        """
-        selected = (
-            self.per_atom_terms
-            if self.data_selector is None
-            else [term for term in self.per_atom_terms if term == self.data_selector]
-        )
-        if selected and ts.n_atoms != self._parsed.n_atoms:
-            raise ValueError(
-                f"Per-atom terms {selected} have {self._parsed.n_atoms} atoms, the "
-                f"trajectory has {ts.n_atoms}"
-            )
-        return super().update_ts(ts)
-
 
 # ``.xyz`` files are guessed as format "XYZ"
 _AUXREADERS["XYZ"] = XYZReader

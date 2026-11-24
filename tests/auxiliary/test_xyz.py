@@ -164,14 +164,6 @@ class TestXYZReader(BaseAuxReaderTest):
         for term in TERMS:
             assert np.isnan(ts.aux.test[term]).all()
 
-    def test_n_atoms_mismatch_raises(self, tmp_path):
-        """Test attaching per-atom data of another system."""
-        path = tmp_path / "plain.xyz"
-        path.write_text(PLAIN_XYZ)
-        u = mda.Universe(COORDINATES_TOPOLOGY, COORDINATES_XTC)
-        with pytest.raises(ValueError, match=r"\['data'\] have 2 atoms"):
-            u.trajectory.add_auxiliary({"data": "data"}, str(path))
-
     def test_changed_file_is_read_again(self, ref, tmp_path):
         """Test that the shared parse is renewed for a changed file."""
         path = tmp_path / "aux.extxyz"
