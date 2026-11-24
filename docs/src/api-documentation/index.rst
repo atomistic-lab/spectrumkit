@@ -9,4 +9,5 @@ The API documentation gives details on how the *functions* and *classes* can be 
    :maxdepth: 2
 
    dielectricspectrum
+   auxiliary
    lib/index

@@ -11,6 +11,13 @@ The rules for spectrumkit's CHANGELOG file:
 
 .. inclusion-marker-changelog-start
 
+Unreleased
+----------
+
+- ``XYZReader``: MDAnalysis auxiliary reader attaching all per-atom and
+  per-frame properties of extended XYZ files (e.g. Born effective charges,
+  forces, polarization) to a trajectory.
+
 v0.1.1 (2026/11/10)
 -------------------
 
