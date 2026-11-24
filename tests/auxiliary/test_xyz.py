@@ -145,10 +145,6 @@ class TestXYZReader(BaseAuxReaderTest):
         with pytest.raises(ValueError, match="read-only"):
             reader.data_dict["bec"][0, 0, 0] = 1
 
-    def test_species(self, reader):
-        """Test species of the first frame."""
-        assert_equal(reader.species, ["O", "H", "H", "O", "H"])
-
     def test_attach_all_terms(self, ref):
         """Test attaching all terms without ``aux_spec``."""
         reader = ref.reader(ref.testdata)

@@ -73,8 +73,7 @@ Without ``aux_spec`` all terms are attached under their own names::
 
 .. note::
     Atoms are matched by index: the file MUST list the atoms in the same order as the
-    topology. :attr:`XYZReader.species` holds the species of the first frame for
-    comparison with ``u.atoms.names``.
+    topology.
 
 .. note::
     Units are not converted. ``represent_ts_as="average"`` works only for numeric
@@ -290,7 +289,6 @@ class _ExtXYZFile:
         properties = self._properties(infos, lines[starts[0] + 2])
 
         self.data_dict: dict[str, np.ndarray] = {}
-        self.species = None
         self._read_atom_columns(lines, starts, properties)
         self.per_atom_terms = list(self.data_dict)
         self._read_frame_keys(infos)
@@ -298,9 +296,8 @@ class _ExtXYZFile:
             term for term in self.data_dict if term not in self.per_atom_terms
         ]
         # read-only, because all readers of the file share these arrays
-        for array in [*self.data_dict.values(), self.species]:
-            if array is not None:
-                array.flags.writeable = False
+        for array in self.data_dict.values():
+            array.flags.writeable = False
 
     def _frame_starts(self, lines: list[str]) -> list[int]:
         """Return the index of the first line of every frame."""
@@ -375,8 +372,6 @@ class _ExtXYZFile:
         for name, kind, ncols in properties:
             block = tokens[..., first_column : first_column + ncols]
             first_column += ncols
-            if name == "species":
-                self.species = block[0, :, 0].copy()
             if name in _COORDINATE_FIELDS:
                 continue
             values = _convert_column(block, name, kind)
@@ -446,11 +441,6 @@ class XYZReader(base.AuxReader):
         ``(n_steps, n_atoms[, ncols])``.
     per_frame_terms : list of str
         Terms read from the comment lines, arrays of shape ``(n_steps, ...)``.
-    species : numpy.ndarray or None
-        Species of the atoms in the first frame, ``None`` if the file has no
-        ``species`` column.
-    n_atoms : int
-        Number of atoms in every frame.
 
     Raises
     ------
@@ -489,8 +479,6 @@ class XYZReader(base.AuxReader):
         self.per_atom_terms = list(parsed.per_atom_terms)
         self.per_frame_terms = list(parsed.per_frame_terms)
         self.terms = list(self.data_dict)
-        self.species = parsed.species
-        self.n_atoms = parsed.n_atoms
         self._n_steps = parsed.n_steps
         super().__init__(**kwargs)
 
@@ -573,9 +561,9 @@ class XYZReader(base.AuxReader):
             if self.data_selector is None
             else [term for term in self.per_atom_terms if term == self.data_selector]
         )
-        if selected and ts.n_atoms != self.n_atoms:
+        if selected and ts.n_atoms != self._parsed.n_atoms:
             raise ValueError(
-                f"Per-atom terms {selected} have {self.n_atoms} atoms, the "
+                f"Per-atom terms {selected} have {self._parsed.n_atoms} atoms, the "
                 f"trajectory has {ts.n_atoms}"
             )
         return super().update_ts(ts)
