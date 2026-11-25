@@ -236,8 +236,8 @@ class TestDebyeRelaxation:
         assert_allclose(corr[0] / n_dim, sigma**2, rtol=0.1)
         assert_allclose(corr / corr[0], np.exp(-lags * self.dt / self.tau), atol=0.05)
 
-    def test_periodogram_dipole(self, dipole):
-        """Periodogram of the dipole reproduces Im(χ)."""
+    def test_direct_fft_dipole(self, dipole):
+        """Segment-averaged power spectrum of the dipole reproduces Im(χ)."""
         res = calculate_spectrum_from_dipole(
             dipole, self.dt, self.volume, self.temperature, segs=100, nobin=True
         )
@@ -245,8 +245,8 @@ class TestDebyeRelaxation:
         expected = self.debye(dipole, res["nu"][m])
         assert_allclose(np.mean(res["susc"].imag[m] / expected.imag), 1, rtol=0.05)
 
-    def test_periodogram_current(self, dipole):
-        """Periodogram of the current reproduces Im(χ)."""
+    def test_direct_fft_current(self, dipole):
+        """Segment-averaged power spectrum of the current reproduces Im(χ)."""
         current = np.diff(dipole, axis=0) / self.dt
         res = calculate_spectrum_from_current(
             current, self.dt, self.volume, self.temperature, segs=100, nobin=True

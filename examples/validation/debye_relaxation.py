@@ -3,9 +3,8 @@ r""".. _howto-debye-relaxation:
 Debye relaxation of an Ornstein-Uhlenbeck dipole
 ------------------------------------------------
 
-The test suite checks the spectrum routes against a dipole whose susceptibility is known
-exactly. This example walks through that test, ``TestDebyeRelaxation`` in
-``tests/tests.py``, and shows what it compares.
+The example walks the user though calculating a spectrum from a over-damped harmonic
+oscillator. The result is a Debye peak that can be compared to the analytical solution.
 """
 
 import matplotlib.pyplot as plt
@@ -13,7 +12,7 @@ import numpy as np
 import scipy.constants
 from scipy.signal import lfilter
 
-from spectrumkit import calculate_spectrum_from_current, calculate_spectrum_from_dipole
+import spectrumkit
 
 BLUE, ORANGE, INK, SHADE = "#2a78d6", "#eb6834", "#0b0b0b", "#e1e0d9"
 
@@ -33,9 +32,9 @@ BLUE, ORANGE, INK, SHADE = "#2a78d6", "#eb6834", "#0b0b0b", "#e1e0d9"
 #     \qquad \langle \xi_\alpha(t) \xi_\beta(t') \rangle
 #     = \delta_{\alpha \beta} \, \delta(t - t').
 #
-# The equation is linear and the noise is uncorrelated with the past, so multiplying by
-# :math:`M_\alpha(0)` and averaging leaves :math:`\dot C = -C / \tau` for the
-# autocorrelation:
+# The equation is linear and the noise is uncorrelated with the past (no memory),
+# so multiplying by :math:`M_\alpha(0)` and averaging leaves :math:`\dot C = -C / \tau`
+# for the autocorrelation:
 #
 # .. math::
 #
@@ -51,7 +50,8 @@ BLUE, ORANGE, INK, SHADE = "#2a78d6", "#eb6834", "#0b0b0b", "#e1e0d9"
 #     \chi''(\omega) = \chi_0 \, \frac{\omega \tau}{1 + \omega^2 \tau^2}, \qquad
 #     \chi_0 = \frac{\langle \boldsymbol{M}^2 \rangle}{3 V \varepsilon_0 k_B T},
 #
-# with the loss peak at :math:`\omega \tau = 1`.
+# with the loss peak at :math:`\omega \tau = 1`. We will now use this simple model to
+# show how spectrumkit is used.
 #
 # Generating the dipole
 # ~~~~~~~~~~~~~~~~~~~~~
@@ -113,11 +113,11 @@ plt.show()
 # :func:`~spectrumkit.dielectricspectrum.calculate_spectrum_from_dipole` works on the
 # dipole, :func:`~spectrumkit.dielectricspectrum.calculate_spectrum_from_current` on the
 # current :math:`\boldsymbol{J} = \dot{\boldsymbol{M}}`, here a finite difference. Both
-# average the periodogram over 100 segments of 20 ps.
+# average the power spectrum over 100 segments of 20 ps.
 
-dipole_route = calculate_spectrum_from_dipole(dipole, dt, volume, temperature, segs=100)
+dipole_route = spectrumkit.calculate_spectrum_from_dipole(dipole, dt, volume, temperature, segs=100)
 current = np.diff(dipole, axis=0) / dt
-current_route = calculate_spectrum_from_current(
+current_route = spectrumkit.calculate_spectrum_from_current(
     current, dt, volume, temperature, segs=100
 )
 
@@ -133,7 +133,7 @@ chi_0 = pref * np.sum(np.var(dipole, axis=0))
 
 
 def debye(nu):
-    """Debye susceptibility at the frequency ``nu`` in THz."""
+    """Debye susceptibility at the frequency ``nu``."""
     return chi_0 / (1 - 2j * np.pi * nu * tau)
 
 
@@ -184,9 +184,9 @@ for name, res in [("dipole", dipole_route), ("current", current_route)]:
 #   route: sampled every 10 fs, the series has a higher spectrum near the Nyquist
 #   frequency of 50 THz than the continuous process.
 # - Between 1 and 10 THz the dipole route lies about 5 % high, and the current route
-#   overshoots at its lowest frequencies. Both are spectral leakage: the periodogram
-#   treats each 20 ps segment as periodic, and the jump between its ends adds a
-#   spurious contribution.
+#   overshoots at its lowest frequencies. Both are spectral leakage: the Fourier
+#   transform treats each 20 ps segment as periodic, and the jump between its ends
+#   adds a spurious contribution.
 #
 # The test runs the same check for
 # :func:`~spectrumkit.dielectricspectrum.WienerKhinchin` with
