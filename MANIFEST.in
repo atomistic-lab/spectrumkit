@@ -2,6 +2,7 @@ graft src
 
 include *.rst
 include LICENSE
+include CITATION.cff
 
 prune .tox
 prune developer
