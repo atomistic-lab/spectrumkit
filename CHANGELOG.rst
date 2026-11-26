@@ -11,6 +11,12 @@ The rules for spectrumkit's CHANGELOG file:
 
 .. inclusion-marker-changelog-start
 
+Unreleased
+----------
+Henrik Stooß
+
+- Add a ``CITATION.cff`` file for GitHub's citation button and Zenodo
+
 v0.1.1 (2026/11/10)
 -------------------
 

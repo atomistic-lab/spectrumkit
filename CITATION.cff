@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use spectrumkit in your work, please cite it as below."
+type: software
+title: spectrumkit
+abstract: Dielectric spectra from molecular dynamics simulations.
+authors:
+  - family-names: Fischer
+    given-names: Kira
+  - family-names: Loche
+    given-names: Philip
+    orcid: "https://orcid.org/0000-0002-9112-0010"
+  - family-names: Schlaich
+    given-names: Alexander
+    orcid: "https://orcid.org/0000-0002-4250-363X"
+  - family-names: Schömig
+    given-names: Richard
+  - family-names: Stärk
+    given-names: Philipp
+  - family-names: Stooß
+    given-names: Henrik
+    orcid: "https://orcid.org/0000-0001-5450-267X"
+repository-code: "https://github.com/atomistic-lab/spectrumkit"
+license: GPL-3.0-or-later
+keywords:
+  - molecular dynamics
+  - dielectric spectroscopy
+  - dielectric spectrum
+  - MDAnalysis
